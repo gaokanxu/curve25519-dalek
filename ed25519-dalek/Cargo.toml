@@ -1,5 +1,5 @@
 [package]
-name = "lumos-ed25519-dalek"
+name = "ed25519-dalek"
 version = "2.1.1"
 edition = "2021"
 authors = [
