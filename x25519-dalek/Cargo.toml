@@ -46,7 +46,7 @@ zeroize = { version = "1", default-features = false, optional = true, features =
 [dev-dependencies]
 bincode = "1"
 criterion = "0.5"
-rand_core = { version = "0.6", default-features = false, features = ["getrandom"] }
+rand_core = { version = "0.6.4", default-features = false, features = ["getrandom"] }
 
 [[bench]]
 name = "x25519"
