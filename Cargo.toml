@@ -2,8 +2,10 @@
 members = [
     "curve25519-dalek",
     "curve25519-dalek-derive",
+    "ed25519",
     "ed25519-dalek",
-    "x25519-dalek"
+    "ed25519-dalek-bip32",
+    "x25519-dalek",
 ]
 resolver = "2"
 
