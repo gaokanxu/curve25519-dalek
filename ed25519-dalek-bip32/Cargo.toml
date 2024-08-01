@@ -1,12 +1,9 @@
 [package]
 name = "ed25519-dalek-bip32"
 version = "0.1.1"
-authors = ["Gao Kanxu <gaokanxu@gmail.com>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/gaokanxu/lumos-curve25519-dalek.git"
-documentation = "https://docs.rs/ed25519-dalek-bip32/"
 description = "Simplified ed25519 BIP32 derivations"
 keywords = ["derivation", "BIP32", "ed25519", "trezor", "blockchain"]
 categories = ["cryptography", "no-std"]
