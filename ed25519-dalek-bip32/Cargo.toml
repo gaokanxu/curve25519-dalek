@@ -19,7 +19,7 @@ std = ["derivation-path/std", "sha2/std", "ed25519-dalek/std"]
 derivation-path = { version = "0.1.3", default-features = false }
 sha2 = { version = "0.10", default-features = false }
 hmac = { version = "0.12.1", default-features = false }
-ed25519-dalek = { version = "2.1.1", default-features = false, features = ["u64_backend", "rand"] }
+ed25519-dalek = { path = "../ed25519-dalek", default-features = false, features = ["u64_backend", "rand"] }
 thiserror = "1.0.57"
 
 [dev-dependencies]
