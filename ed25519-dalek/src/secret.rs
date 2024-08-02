@@ -278,7 +278,10 @@ impl<'a> From<&'a SecretKey> for ExpandedSecretKey {
         lower[31] &=  63;
         lower[31] |=  64;
 
-        ExpandedSecretKey{ key: Scalar::from_bits(lower), nonce: upper, }
+        //ExpandedSecretKey{ key: Scalar::from_bits(lower), nonce: upper, }
+        //gaokanxu 2024.08.02
+        ExpandedSecretKey{ key: Scalar::from_bytes_mod_order(lower), nonce: upper, }
+        
     }
 }
 
@@ -380,7 +383,9 @@ impl ExpandedSecretKey {
         upper.copy_from_slice(&bytes[32..64]);
 
         Ok(ExpandedSecretKey {
-            key: Scalar::from_bits(lower),
+            //key: Scalar::from_bits(lower),
+            //gaokanxu 2024.08.02
+            key: Scalar::from_bytes_mod_order(lower),
             nonce: upper,
         })
     }

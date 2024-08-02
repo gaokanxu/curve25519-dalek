@@ -30,7 +30,7 @@
 //!
 //! pub struct HelloSigner<S>
 //! where
-//!     S: Signer<ed25519::Signature>
+//!     S: Signer<ed25519:: Signature>
 //! {
 //!     pub signing_key: S
 //! }

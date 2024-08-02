@@ -14,7 +14,9 @@ use core::fmt::Debug;
 
 use curve25519_dalek::edwards::CompressedEdwardsY;
 use curve25519_dalek::scalar::Scalar;
-use ed25519::signature::Signature as _;
+//use ed25519::signature::Signature as _;
+//2024.08.02 gaokanxu
+//use ed25519::Signature as _;
 
 use crate::constants::*;
 use crate::errors::*;
@@ -77,7 +79,9 @@ fn check_scalar(bytes: [u8; 32]) -> Result<Scalar, SignatureError> {
         return Err(InternalError::ScalarFormatError.into());
     }
 
-    Ok(Scalar::from_bits(bytes))
+    //Ok(Scalar::from_bits(bytes))
+    //gaokanxu 2024.08.02
+    Ok(Scalar::from_bytes_mod_order(bytes))
 }
 
 #[cfg(not(feature = "legacy_compatibility"))]
@@ -92,7 +96,9 @@ fn check_scalar(bytes: [u8; 32]) -> Result<Scalar, SignatureError> {
     //
     // This succeed-fast trick should succeed for roughly half of all scalars.
     if bytes[31] & 240 == 0 {
-        return Ok(Scalar::from_bits(bytes))
+        //return Ok(Scalar::from_bits(bytes))
+        //gaokanxu 2024.08.02
+        return Ok(Scalar::from_bytes_mod_order(bytes))
     }
 
     match Scalar::from_canonical_bytes(bytes) {
