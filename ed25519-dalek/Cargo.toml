@@ -77,6 +77,6 @@ rand_core = ["dep:rand_core"]
 serde = ["dep:serde", "ed25519/serde"]
 zeroize = ["dep:zeroize", "curve25519-dalek/zeroize"]
 
-//2024.08.02 gaokanxu
+#2024.08.02 gaokanxu
 rand = []
 u64_backend = []
