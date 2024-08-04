@@ -29,23 +29,25 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 #[cfg(feature = "serde")]
 use serde_bytes::{Bytes as SerdeBytes, ByteBuf as SerdeByteBuf};
 
-use zeroize::Zeroize;
-
 use crate::constants::*;
 use crate::errors::*;
 use crate::public::*;
 use crate::signature::*;
 
-//gaokanxu 2024.08.04
-use zeroize_derive::Zeroize;
+use zeroize::Zeroize;   //导入 Zeroize trait
+//gaokanxu 2024.08.04 2lines
+use zeroize_derive::Zeroize as DeriveZeroize;   //导入 Zeroize 派生宏
 use digest::Update;
 
 /// An EdDSA secret key.
 ///
 /// Instances of this secret are automatically overwritten with zeroes when they
 /// fall out of scope.
-#[derive(Zeroize)]
-#[zeroize(drop)] // Overwrite secret key material with null bytes when it goes out of scope.
+
+//#[derive(Zeroize)]
+//gaokanxu 2024.08.04
+#[derive(DeriveZeroize)]
+#[zeroize(drop)] // 当 SecretKey 超出范围时，用零字节覆盖它
 pub struct SecretKey(pub(crate) [u8; SECRET_KEY_LENGTH]);
 
 impl Debug for SecretKey {
@@ -239,7 +241,9 @@ impl<'d> Deserialize<'d> for SecretKey {
 // same signature scheme, and which both fail in exactly the same way.  For a
 // better-designed, Schnorr-based signature scheme, see Trevor Perrin's work on
 // "generalised EdDSA" and "VXEdDSA".
-#[derive(Zeroize)]
+//#[derive(Zeroize)]
+//gaokanxu 2024.08.04
+#[derive(DeriveZeroize)]
 #[zeroize(drop)] // Overwrite secret key material with null bytes when it goes out of scope.
 pub struct ExpandedSecretKey {
     pub(crate) key: Scalar,
