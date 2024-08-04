@@ -18,6 +18,7 @@ use curve25519_dalek::scalar::Scalar;
 //2024.08.02 gaokanxu
 //use ed25519::Signature as _;
 
+
 use crate::constants::*;
 use crate::errors::*;
 
@@ -100,11 +101,24 @@ fn check_scalar(bytes: [u8; 32]) -> Result<Scalar, SignatureError> {
         //gaokanxu 2024.08.02
         return Ok(Scalar::from_bytes_mod_order(bytes))
     }
-
+/*
     match Scalar::from_canonical_bytes(bytes) {
         None => return Err(InternalError::ScalarFormatError.into()),
         Some(x) => return Ok(x),
     };
+*/
+    //gaokanxu 2024.08.04 modify upper lines to below lines
+    match Scalar::from_canonical_bytes(bytes) {
+        scalar_ctoption => {
+            if scalar_ctoption.is_none().unwrap_u8() == 1 {
+                return Err(InternalError::ScalarFormatError.into());
+            } else {
+                let scalar = scalar_ctoption.unwrap();
+                return Ok(scalar);
+            }
+        }
+    };
+    //gaokanxu 2024.08.04 modify ended
 }
 
 impl InternalSignature {
@@ -200,12 +214,18 @@ impl TryFrom<&ed25519::Signature> for InternalSignature {
     type Error = SignatureError;
 
     fn try_from(sig: &ed25519::Signature) -> Result<InternalSignature, SignatureError> {
-        InternalSignature::from_bytes(sig.as_bytes())
+        //InternalSignature::from_bytes(sig.as_bytes())
+        //gaokanxu 2024.8.4
+        InternalSignature::from_bytes(&sig.to_bytes())
     }
 }
 
+
+
 impl From<InternalSignature> for ed25519::Signature {
     fn from(sig: InternalSignature) -> ed25519::Signature {
-        ed25519::Signature::from_bytes(&sig.to_bytes()).unwrap()
+        //ed25519::Signature::from_bytes(&sig.to_bytes()).unwrap()
+        //gaokanxu 代码可能会造成程序在遇到异常时无法处理而退出
+        ed25519::Signature::from_bytes(&sig.to_bytes())
     }
 }

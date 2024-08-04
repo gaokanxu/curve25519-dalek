@@ -36,6 +36,10 @@ use crate::errors::*;
 use crate::public::*;
 use crate::signature::*;
 
+//gaokanxu 2024.08.04
+use zeroize_derive::Zeroize;
+use digest::Update;
+
 /// An EdDSA secret key.
 ///
 /// Instances of this secret are automatically overwritten with zeroes when they
@@ -268,7 +272,10 @@ impl<'a> From<&'a SecretKey> for ExpandedSecretKey {
         let mut lower: [u8; 32] = [0u8; 32];
         let mut upper: [u8; 32] = [0u8; 32];
 
-        h.update(secret_key.as_bytes());
+        //h.update(secret_key.as_bytes());
+        //gaokanxu 2024.08.04
+        Digest::update(&mut h, secret_key.as_bytes()); // 显式调用 Digest::update
+        
         hash.copy_from_slice(h.finalize().as_slice());
 
         lower.copy_from_slice(&hash[00..32]);
@@ -399,16 +406,28 @@ impl ExpandedSecretKey {
         let s: Scalar;
         let k: Scalar;
 
-        h.update(&self.nonce);
-        h.update(&message);
+        //h.update(&self.nonce);
+        //h.update(&message);
+        //gaokanxu 2024.08.04 2lines
+        Digest::update(&mut h, &self.nonce); // 显式调用 Digest::update
+        Digest::update(&mut h, &message); // 显式调用 Digest::update
+        
 
         r = Scalar::from_hash(h);
-        R = (&r * &constants::ED25519_BASEPOINT_TABLE).compress();
+        
+        //R = (&r * &constants::ED25519_BASEPOINT_TABLE).compress();
+        //gaokanxu 2024.08.04
+        R = (&r * constants::ED25519_BASEPOINT_TABLE).compress();
 
         h = Sha512::new();
-        h.update(R.as_bytes());
-        h.update(public_key.as_bytes());
-        h.update(&message);
+        
+        //h.update(R.as_bytes());
+        //h.update(public_key.as_bytes());
+        //h.update(&message);
+        //gaokanxu 2024.08.04 3lines
+        Digest::update(&mut h, R.as_bytes()); // 显式调用 Digest::update
+        Digest::update(&mut h, public_key.as_bytes()); // 显式调用 Digest::update
+        Digest::update(&mut h, &message); // 显式调用 Digest::update
 
         k = Scalar::from_hash(h);
         s = &(&k * &self.key) + &r;
@@ -485,7 +504,9 @@ impl ExpandedSecretKey {
             .chain(&prehash[..]);
 
         r = Scalar::from_hash(h);
-        R = (&r * &constants::ED25519_BASEPOINT_TABLE).compress();
+        //R = (&r * &constants::ED25519_BASEPOINT_TABLE).compress();
+        //gaokanxu 2024.08.04
+        R = (&r * constants::ED25519_BASEPOINT_TABLE).compress();
 
         h = Sha512::new()
             .chain(b"SigEd25519 no Ed25519 collisions")

@@ -20,8 +20,8 @@ use curve25519_dalek::edwards::EdwardsPoint;
 use curve25519_dalek::scalar::Scalar;
 
 //gaokanxu 2024.08.02 2lines
-use curve25519_dalek::edwards::EdwardsBasepointTable;
-use std::ops::Mul;
+//use curve25519_dalek::edwards::EdwardsBasepointTable;
+//use std::ops::Mul;
 
 use ed25519::signature::Verifier;
 
@@ -160,7 +160,7 @@ impl PublicKey {
 
         //let point = &Scalar::from_bits(*bits) * &constants::ED25519_BASEPOINT_TABLE;
         //gaokanxu 2024.08.02
-        let point = &Scalar::from_bytes_mod_order(*bits) * &constants::ED25519_BASEPOINT_TABLE;
+        let point = &Scalar::from_bytes_mod_order(*bits) * constants::ED25519_BASEPOINT_TABLE;
         
         let compressed = point.compress();
 
