@@ -263,7 +263,7 @@ mod keypair;
 mod errors;
 mod public;
 mod secret;
-mod signature;
+pub mod signature;
 
 pub use curve25519_dalek::digest::Digest;
 
