@@ -128,6 +128,9 @@ impl Keypair {
     where
         R: CryptoRng + RngCore,
     {
+        //gaokanxu 2024.08.06
+        println!("rand feature is enabled");
+    
         let sk: SecretKey = SecretKey::generate(csprng);
         let pk: PublicKey = (&sk).into();
 
