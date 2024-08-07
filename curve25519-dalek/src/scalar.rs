@@ -136,7 +136,9 @@ use rand_core::CryptoRngCore;
 #[cfg(feature = "digest")]
 use digest::generic_array::typenum::U64;
 #[cfg(feature = "digest")]
-use digest::Digest;
+//use digest::Digest;
+//gaokanxu 2024.08.07
+use digest::{Digest as DigestDigest, FixedOutput, Reset, Update};
 
 use subtle::Choice;
 use subtle::ConditionallySelectable;
@@ -624,10 +626,16 @@ impl Scalar {
     /// ```
     pub fn hash_from_bytes<D>(input: &[u8]) -> Scalar
     where
-        D: Digest<OutputSize = U64> + Default,
+        //D: Digest<OutputSize = U64> + Default,
+        //gaokanxu 2024.08.07 
+        D: DigestDigest<OutputSize = U64> + Update + Reset + FixedOutput<OutputSize = U64> + Clone + Default,
     {
         let mut hash = D::default();
-        hash.update(input);
+        
+        //hash.update(input);
+        //gaokanxu 2024.08.07
+        DigestDigest::update(&mut hash, input);
+        
         Scalar::from_hash(hash)
     }
 
@@ -670,7 +678,9 @@ impl Scalar {
     /// ```
     pub fn from_hash<D>(hash: D) -> Scalar
     where
-        D: Digest<OutputSize = U64>,
+        //D: Digest<OutputSize = U64>,
+        //gaokanxu 2024.08.07
+        D: DigestDigest<OutputSize = U64> + Update + Reset + FixedOutput<OutputSize = U64> + Clone + Default,
     {
         let mut output = [0u8; 64];
         output.copy_from_slice(hash.finalize().as_slice());

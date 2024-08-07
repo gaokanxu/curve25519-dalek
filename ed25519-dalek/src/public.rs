@@ -14,18 +14,19 @@ use core::fmt::Debug;
 
 use curve25519_dalek::constants;
 use curve25519_dalek::digest::generic_array::typenum::U64;
-use curve25519_dalek::digest::Digest;
+use curve25519_dalek::digest::Digest as DalekDigest;
 use curve25519_dalek::edwards::CompressedEdwardsY;
 use curve25519_dalek::edwards::EdwardsPoint;
 use curve25519_dalek::scalar::Scalar;
 
-//gaokanxu 2024.08.02 2lines
-//use curve25519_dalek::edwards::EdwardsBasepointTable;
-//use std::ops::Mul;
+//gaokanxu 2024.08.07
+use digest::{Digest as DigestDigest, FixedOutput, Reset, Update};
 
 use ed25519::signature::Verifier;
 
-pub use sha2::Sha512;
+//pub use sha2::Sha512;
+//gaokanxu 2024.08.07
+use sha2::{Sha512, Digest as Sha2Digest};
 
 #[cfg(feature = "serde")]
 use serde::de::Error as SerdeError;
@@ -62,7 +63,10 @@ impl<'a> From<&'a SecretKey> for PublicKey {
         let mut hash: [u8; 64] = [0u8; 64];
         let mut digest: [u8; 32] = [0u8; 32];
 
-        h.update(secret_key.as_bytes());
+        //h.update(secret_key.as_bytes());
+        //gaokanxu 2024.08.07
+        DigestDigest::update(&mut h, secret_key.as_bytes());
+        
         hash.copy_from_slice(h.finalize().as_slice());
 
         digest.copy_from_slice(&hash[..32]);
@@ -167,6 +171,8 @@ impl PublicKey {
         PublicKey(compressed, point)
     }
 
+
+
     /// Verify a `signature` on a `prehashed_message` using the Ed25519ph algorithm.
     ///
     /// # Inputs
@@ -193,7 +199,9 @@ impl PublicKey {
         signature: &ed25519::Signature,
     ) -> Result<(), SignatureError>
     where
-        D: Digest<OutputSize = U64>,
+        //D: Digest<OutputSize = U64>,
+        //gaokanxu 2024.08.07
+        D: DigestDigest<OutputSize = U64> + Update + Reset + FixedOutput<OutputSize = U64> + Clone + Default,
     {
         let signature = InternalSignature::try_from(signature)?;
 
@@ -206,6 +214,7 @@ impl PublicKey {
 
         let minus_A: EdwardsPoint = -self.1;
 
+        /*
         h.update(b"SigEd25519 no Ed25519 collisions");
         h.update(&[1]); // Ed25519ph
         h.update(&[ctx.len() as u8]);
@@ -213,6 +222,18 @@ impl PublicKey {
         h.update(signature.R.as_bytes());
         h.update(self.as_bytes());
         h.update(prehashed_message.finalize().as_slice());
+        */
+        //gaokanxu 2024.08.07 begin
+        DigestDigest::update(&mut h, b"SigEd25519 no Ed25519 collisions");
+        DigestDigest::update(&mut h, &[1]); // Ed25519ph
+        DigestDigest::update(&mut h, &[ctx.len() as u8]);
+        DigestDigest::update(&mut h, ctx);
+        DigestDigest::update(&mut h, signature.R.as_bytes());
+        DigestDigest::update(&mut h, self.as_bytes());
+        DigestDigest::update(&mut h, prehashed_message.finalize().as_slice());
+        //gaokanxu end
+
+
 
         k = Scalar::from_hash(h);
         R = EdwardsPoint::vartime_double_scalar_mul_basepoint(&k, &(minus_A), &signature.s);
@@ -310,10 +331,16 @@ impl PublicKey {
         if signature_R.is_small_order() || self.1.is_small_order() {
             return Err(InternalError::VerifyError.into());
         }
-
+        /*
         h.update(signature.R.as_bytes());
         h.update(self.as_bytes());
         h.update(&message);
+        */
+        //gaokanxu 2024.08.07 begin
+        DigestDigest::update(&mut h, signature.R.as_bytes());
+        DigestDigest::update(&mut h, self.as_bytes());
+        DigestDigest::update(&mut h, &message);
+        //gaokanxu end
 
         k = Scalar::from_hash(h);
         R = EdwardsPoint::vartime_double_scalar_mul_basepoint(&k, &(minus_A), &signature.s);
@@ -346,9 +373,16 @@ impl Verifier<ed25519::Signature> for PublicKey {
         let k: Scalar;
         let minus_A: EdwardsPoint = -self.1;
 
+        /*
         h.update(signature.R.as_bytes());
         h.update(self.as_bytes());
         h.update(&message);
+        */
+        //gaokanxu 2024.08.07 begin
+        DigestDigest::update(&mut h, signature.R.as_bytes());
+        DigestDigest::update(&mut h, self.as_bytes());
+        DigestDigest::update(&mut h, &message);
+        //gaokanxu 2024.08.07 end
 
         k = Scalar::from_hash(h);
         R = EdwardsPoint::vartime_double_scalar_mul_basepoint(&k, &(minus_A), &signature.s);

@@ -10,7 +10,9 @@
 //! ed25519 keypairs.
 
 #[cfg(feature = "rand")]
-use rand::{CryptoRng, RngCore};
+//use rand::{CryptoRng, RngCore};
+//gaokanxu 2024.08.08
+use rand_core::{CryptoRng, RngCore};
 
 #[cfg(feature = "serde")]
 use serde::de::Error as SerdeError;
@@ -19,10 +21,10 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 #[cfg(feature = "serde")]
 use serde_bytes::{Bytes as SerdeBytes, ByteBuf as SerdeByteBuf};
 
-pub use sha2::Sha512;
+pub use sha2::{Sha512, Digest};
 
 use curve25519_dalek::digest::generic_array::typenum::U64;
-pub use curve25519_dalek::digest::Digest;
+pub use curve25519_dalek::digest::Digest as DalekDigest;
 
 use ed25519::signature::{Signer, Verifier};
 
@@ -30,6 +32,10 @@ use crate::constants::*;
 use crate::errors::*;
 use crate::public::*;
 use crate::secret::*;
+
+//gaokanxu 2024.08.07
+use digest::{Digest as DigestDigest, FixedOutput, Reset, Update};
+
 
 /// An ed25519 keypair.
 #[derive(Debug)]
@@ -129,7 +135,7 @@ impl Keypair {
         R: CryptoRng + RngCore,
     {
         //gaokanxu 2024.08.06
-        println!("rand feature is enabled");
+        //println!("rand feature is enabled");
     
         let sk: SecretKey = SecretKey::generate(csprng);
         let pk: PublicKey = (&sk).into();
@@ -243,7 +249,9 @@ impl Keypair {
         context: Option<&[u8]>,
     ) -> Result<ed25519::Signature, SignatureError>
     where
-        D: Digest<OutputSize = U64>,
+        //D: Digest<OutputSize = U64>,
+        //gaokanxu 2024.08.07
+        D: DigestDigest<OutputSize = U64> + Update + Reset + FixedOutput<OutputSize = U64> + Clone + Default,
     {
         let expanded: ExpandedSecretKey = (&self.secret).into(); // xxx thanks i hate this
 
@@ -330,7 +338,9 @@ impl Keypair {
         signature: &ed25519::Signature,
     ) -> Result<(), SignatureError>
     where
-        D: Digest<OutputSize = U64>,
+        //D: Digest<OutputSize = U64>,
+        //gaokanxu 2024.08.07
+        D: DigestDigest<OutputSize = U64> + Update + Reset + FixedOutput<OutputSize = U64> + Clone + Default,
     {
         self.public.verify_prehashed(prehashed_message, context, signature)
     }
@@ -444,3 +454,8 @@ impl<'d> Deserialize<'d> for Keypair {
         Keypair::from_bytes(bytes.as_ref()).map_err(SerdeError::custom)
     }
 }
+
+
+
+
+
