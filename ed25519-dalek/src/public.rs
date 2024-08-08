@@ -26,7 +26,7 @@ use ed25519::signature::Verifier;
 
 //pub use sha2::Sha512;
 //gaokanxu 2024.08.07
-use sha2::{Sha512, Digest as Sha2Digest};
+use sha2::{Sha512};
 
 #[cfg(feature = "serde")]
 use serde::de::Error as SerdeError;

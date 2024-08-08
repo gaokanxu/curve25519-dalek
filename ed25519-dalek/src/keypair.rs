@@ -21,7 +21,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 #[cfg(feature = "serde")]
 use serde_bytes::{Bytes as SerdeBytes, ByteBuf as SerdeByteBuf};
 
-pub use sha2::{Sha512, Digest};
+pub use sha2::{Sha512};
 
 use curve25519_dalek::digest::generic_array::typenum::U64;
 pub use curve25519_dalek::digest::Digest as DalekDigest;
