@@ -10,10 +10,10 @@ pub extern crate derivation_path;
 pub extern crate ed25519_dalek;
 
 pub use derivation_path::{ChildIndex, DerivationPath};
-//pub use ed25519_dalek::{PublicKey, SecretKey};
+pub use ed25519_dalek::{PublicKey, SecretKey};
 //gaokanxu 2024.08.04 
 //pub use ed25519_dalek::{Keypair as PublicKey, SecretKey};
-pub use ed25519_dalek::{Keypair as PublicKey, Keypair, SecretKey};
+//pub use ed25519_dalek::{Keypair as PublicKey, Keypair, SecretKey};
 
 use core::fmt;
 use hmac::{Hmac, Mac};
