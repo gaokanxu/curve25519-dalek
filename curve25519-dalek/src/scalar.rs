@@ -252,6 +252,7 @@ impl Scalar {
     pub fn from_bytes_mod_order_wide(input: &[u8; 64]) -> Scalar {
         UnpackedScalar::from_bytes_wide(input).pack()
     }
+    
 
     /// Attempt to construct a `Scalar` from a canonical byte representation.
     ///
@@ -285,6 +286,15 @@ impl Scalar {
         s
     }
 }
+
+//gaokanxu 2024.08.19 
+impl Scalar {
+    /// Returns a Scalar representing the value 1.
+    pub fn one() -> Scalar {
+        Scalar::from(1u64)
+    }
+}
+
 
 impl Debug for Scalar {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
