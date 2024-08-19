@@ -289,9 +289,12 @@ impl Scalar {
 
 //gaokanxu 2024.08.19 
 impl Scalar {
+    /// Returns a `Scalar` representing the value 1.
     pub fn one() -> Scalar {
         Scalar::from(1u64)
     }
+    
+    /// Returns a `Scalar` representing the value 0.
     pub fn zero() -> Scalar {
         Scalar::from(0u64)
     }
