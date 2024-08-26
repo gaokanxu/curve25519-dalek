@@ -205,7 +205,7 @@ use crate::scalar::Scalar;
 use crate::traits::BasepointTable;
 use crate::traits::Identity;
 #[cfg(feature = "alloc")]
-use crate::traits::{MultiscalarMul, VartimeMultiscalarMul, VartimePrecomputedMultiscalarMul};
+pub use crate::traits::{MultiscalarMul, VartimeMultiscalarMul, VartimePrecomputedMultiscalarMul};
 
 // ------------------------------------------------------------------------
 // Compressed points
